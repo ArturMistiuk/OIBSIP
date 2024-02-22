@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from threading import Lock
+from typing import NoReturn
 
 from app.services import make_hash_password
 
@@ -34,15 +35,16 @@ class Database(metaclass=DatabaseMeta):
 
 
     @staticmethod
-    async def add_user(username: str, password: str):
+    async def add_user(username: str, password: str) -> NoReturn:
         hashed_password = make_hash_password(password)
         new_user = User(
             username=username,
             password=hashed_password
         )
-        print(new_user.id)
         with Database._lock:
-            if new_user.username in Database.users:
-                raise ValueError('User with this username already exists!')
             Database.users[new_user.username] = new_user.password
-            return Database.users
+
+
+    @staticmethod
+    async def find_user_by_username(username: str) -> User:
+        return Database.users.get(username)
