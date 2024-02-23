@@ -9,7 +9,7 @@ class MainError(HTTPException):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
-class UserAlreadyExistsError(HTTPException):
+class UserAlreadyExistsError(MainError):
     status_code = status.HTTP_409_CONFLICT
     detail = 'User with this username already exists'
 
