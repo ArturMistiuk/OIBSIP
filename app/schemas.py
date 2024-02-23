@@ -24,3 +24,8 @@ class SUserRegistration(BaseModel):
         if fields_value.confirm_password != fields_value.password:
             raise ValueError('Passwords do not match.')
         return fields_value
+
+
+class SUserLogin(BaseModel):
+    username: str
+    password: str
