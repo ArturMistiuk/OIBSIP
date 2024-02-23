@@ -1,19 +1,6 @@
 from dataclasses import dataclass, field
 from threading import Lock
-from typing import NoReturn
-
-from app.services import make_hash_password
-
-@dataclass
-class User:
-    username: str
-    password: str
-    id_counter: int = 0
-    id: int = field(init=False)
-
-    def __post_init__(self):
-        self.id = User.id_counter
-        User.id_counter += 1
+from typing import NoReturn, Union
 
 
 class DatabaseMeta(type):
@@ -29,14 +16,24 @@ class DatabaseMeta(type):
         return cls._instances[cls]
 
 
+@dataclass
+class User:
+    username: str
+    password: str
+    id_counter: int = 0
+    id: int = field(init=False)
+
+    def __post_init__(self):
+        self.id = User.id_counter
+        User.id_counter += 1
+
+
 class Database(metaclass=DatabaseMeta):
     users = {}
     _lock: Lock = Lock()
 
-
     @staticmethod
-    async def add_user(username: str, password: str) -> NoReturn:
-        hashed_password = make_hash_password(password)
+    async def add_user(username: str, hashed_password: str) -> NoReturn:
         new_user = User(
             username=username,
             password=hashed_password
@@ -46,5 +43,10 @@ class Database(metaclass=DatabaseMeta):
 
 
     @staticmethod
-    async def find_user_by_username(username: str) -> User:
-        return Database.users.get(username)
+    async def find_user_by_username(username: str) -> Union[User, None]:
+        if username in Database.users:
+            password = Database.users.get(username)
+            user = User(username=username, password=password)
+            return user
+        else:
+            return None
