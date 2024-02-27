@@ -17,3 +17,22 @@ class UserAlreadyExistsError(MainError):
 class IncorrectUsernameOrPasswordError(MainError):
     status_code = status.HTTP_401_UNAUTHORIZED
     detail = 'Incorrect username or password'
+
+
+class TokenExpiredError(MainError):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = 'Token expired'
+
+
+class TokenAbsentError(MainError):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = 'Token absent'
+
+
+class IncorrectTokenFormatError(MainError):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = 'Incorrect token format'
+
+
+class UserIsNotPresentError(MainError):
+    status_code = status.HTTP_401_UNAUTHORIZED
