@@ -1,6 +1,9 @@
 import bcrypt
+from datetime import datetime, timedelta
+from jose import jwt
 
 from app.database import Database
+from app.config import settings
 
 
 def make_hash_password(password: str) -> str:
@@ -21,3 +24,11 @@ async def authenticate_user(username: str, password: str):
     user = await Database.find_user_by_username(username)
     if user and verify_password(password, user.password):
         return user
+
+
+def create_access_token(user_data: dict) -> str:
+    data_to_encode = user_data.copy()
+    token_expire_time = datetime.utcnow() + timedelta(minutes=30)
+    data_to_encode.update({'exp': token_expire_time})
+    encoded_jwt = jwt.encode(data_to_encode, settings.SECRET_KEY, settings.JWT_SIGNING_ALGORITHM)
+    return encoded_jwt
