@@ -39,14 +39,18 @@ class Database(metaclass=DatabaseMeta):
             password=hashed_password
         )
         with Database._lock:
-            Database.users[new_user.username] = new_user.password
-
+            Database.users[new_user.id] = (new_user.username, new_user.password)
 
     @staticmethod
     async def find_user_by_username(username: str) -> Union[User, None]:
-        if username in Database.users:
-            password = Database.users.get(username)
-            user = User(username=username, password=password)
-            return user
-        else:
-            return None
+        for stored_username, stored_password in Database.users.values():
+            if username == stored_username:
+                return User(username=stored_username, password=stored_password)
+        return None
+
+    @staticmethod
+    async def find_user_by_id(user_id: int) -> Union[User, None]:
+        print(Database.users)
+        print(Database.users.get(user_id))
+
+
