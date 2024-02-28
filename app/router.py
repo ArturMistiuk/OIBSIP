@@ -26,7 +26,6 @@ async def register_user(user_data: SUserRegistration) -> Response:
 @router.post('/login')
 async def login_user(response: Response, user_data: SUserLogin):
     user = await authenticate_user(user_data.username, user_data.password)
-    print(user, 'USER')
     if not user:
         raise IncorrectUsernameOrPasswordError
     access_token = create_access_token({'sub': str(user.id)})
@@ -36,4 +35,4 @@ async def login_user(response: Response, user_data: SUserLogin):
 
 @router.post('/secured_page')
 async def secured_page(user: User = Depends(get_current_user)):
-    return user
+    return 'Welcome to the secured page, {}!'.format(user.username)
